@@ -1625,9 +1625,6 @@
   .text-emerald-900 {
     color: var(--color-emerald-900);
   }
-  .text-gray-300 {
-    color: var(--color-gray-300);
-  }
   .text-gray-400 {
     color: var(--color-gray-400);
   }
@@ -1972,9 +1969,6 @@
       .hover\:bg-slate-200\/60:hover {
         background-color: color-mix(in oklab, var(--color-slate-200) 60%, transparent);
       }
-    }
-    .hover\:bg-slate-700:hover {
-      background-color: var(--color-slate-700);
     }
     .hover\:bg-slate-800:hover {
       background-color: var(--color-slate-800);
