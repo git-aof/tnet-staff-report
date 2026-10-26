@@ -14,7 +14,7 @@ import { useAuth } from "@/context/AuthContext";
 import AuthModal from "./AuthModal";
 
 export default function Navbar({ activeTab, setActiveTab, isConfigured }) {
-  const { userProfile } = useAuth();
+  const { userProfile, loading } = useAuth();
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [showRoleWarning, setShowRoleWarning] = useState(false);
 
@@ -76,7 +76,7 @@ export default function Navbar({ activeTab, setActiveTab, isConfigured }) {
               >
                 <Search className="w-4 h-4" />
                 <span>หน้าหัวหน้างาน</span>
-                {userProfile?.role === "staff" && (
+                {!loading && userProfile?.role === "staff" && (
                   <Lock className="w-3 h-3 text-slate-400 ml-0.5" />
                 )}
               </button>

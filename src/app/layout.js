@@ -1,5 +1,6 @@
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
+import Link from "next/link";
 
 export const metadata = {
   title: "T-NET Staff Work Report System",

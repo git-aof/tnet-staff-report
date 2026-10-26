@@ -2,6 +2,10 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { auth, db, isFirebaseConfigured } from "@/firebase";
+import adminWhitelist from "@/config/adminWhitelist.json";
+
+// Custom hook to access AuthContext easily
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -95,7 +99,13 @@ export function AuthProvider({ children }) {
           const userDocRef = doc(db, "users", currentUser.uid);
           const userSnap = await getDoc(userDocRef);
           if (userSnap.exists()) {
-            setUserProfile(userSnap.data());
+            const data = userSnap.data();
+            // Check admin whitelist if role not already admin
+            if (data.role !== "admin" && adminWhitelist.includes(currentUser.uid)) {
+              data.role = "admin";
+              await setDoc(userDocRef, { ...data }, { merge: true });
+            }
+            setUserProfile(data);
           } else {
             const defaultProfile = {
               uid: currentUser.uid,
@@ -104,7 +114,7 @@ export function AuthProvider({ children }) {
               employeeId: "EMP-" + currentUser.uid.substring(0, 4).toUpperCase(),
               department: "ฝ่ายพัฒนาซอฟต์แวร์ (Software Development)",
               position: "พนักงานทั่วไป",
-              role: "staff",
+              role: adminWhitelist.includes(currentUser.uid) ? "admin" : "staff",
               createdAt: serverTimestamp(),
             };
             await setDoc(userDocRef, defaultProfile);
@@ -119,7 +129,7 @@ export function AuthProvider({ children }) {
             employeeId: "EMP-000",
             department: "ฝ่ายพัฒนาซอฟต์แวร์ (Software Development)",
             position: "พนักงาน",
-            role: "staff",
+            role: adminWhitelist.includes(currentUser.uid) ? "admin" : "staff",
           });
         }
       } else {
@@ -257,3 +267,5 @@ export function AuthProvider({ children }) {
 }
 
 export const useAuth = () => useContext(AuthContext);
+
+
