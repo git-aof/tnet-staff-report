@@ -165,7 +165,7 @@ const DEFAULT_PROJECTS_SEED = [
 ];
 
 export default function MasterDataManager({ initialTab = 'departments' }) {
-  const { user } = useAuth();
+  const { user, userProfile } = useAuth();
   const [activeTab, setActiveTab] = useState(initialTab || 'departments');
   const [prevInitialTab, setPrevInitialTab] = useState(initialTab);
 
@@ -198,7 +198,7 @@ export default function MasterDataManager({ initialTab = 'departments' }) {
   const [formData, setFormData] = useState({});
 
   // ตรวจสอบสิทธิ์ Admin หรือ Supervisor
-  const userRole = user?.role || 'staff';
+  const userRole = user?.role || userProfile?.role || 'staff';
   const hasAccess = userRole === 'admin' || userRole === 'supervisor';
 
   // แจ้งเตือน Toast ชั่วคราว
