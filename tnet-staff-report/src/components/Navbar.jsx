@@ -1,21 +1,19 @@
 // src/components/Navbar.jsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useSyncExternalStore } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+
+const emptySubscribe = () => () => {};
 
 export default function Navbar() {
   const { user, userProfile, logout, loading } = useAuth();
   const pathname = usePathname();
 
-  // 🟢 State ป้องกัน Hydration Mismatch ระหว่าง Server กับ Client
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  // 🟢 ป้องกัน Hydration Mismatch ระหว่าง Server กับ Client ตามมาตรฐาน React 19
+  const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
 
   // ดึงข้อมูล Role จาก user หรือ userProfile
   const role = user?.role || userProfile?.role || 'staff';
@@ -72,6 +70,16 @@ export default function Navbar() {
                 {isAdminOrSupervisor && (
                   <>
                     <Link
+                      href="/supervisor/dashboard"
+                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/supervisor/dashboard')
+                          ? 'bg-slate-800 text-white font-semibold'
+                          : 'text-slate-300 hover:bg-slate-800/60 hover:text-white'
+                        }`}
+                    >
+                      แดชบอร์ด
+                    </Link>
+
+                    <Link
                       href="/supervisor"
                       className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive('/supervisor')
                           ? 'bg-slate-800 text-white font-semibold'
@@ -109,14 +117,31 @@ export default function Navbar() {
           {/* User Profile & Logout / Login Buttons */}
           <div className="flex items-center space-x-4">
             {showAuthMenu && (
-              <div className="flex items-center space-x-3">
-                <span className="text-xs sm:text-sm text-slate-300 hidden sm:inline-block font-medium">
-                  {user.displayName || userProfile?.name || user.email} ({role})
-                </span>
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                <Link
+                  href="/profile"
+                  className={`flex items-center gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors ${
+                    isActive('/profile')
+                      ? 'bg-blue-600 text-white font-semibold shadow-xs'
+                      : 'text-slate-200 hover:bg-slate-800 hover:text-white'
+                  }`}
+                  title="ดูและแก้ไขข้อมูลส่วนตัว"
+                >
+                  <div className="w-6 h-6 rounded-full bg-blue-500/30 text-blue-300 border border-blue-400/40 flex items-center justify-center font-bold text-xs">
+                    {(user.displayName || userProfile?.name || user.email || 'U').charAt(0).toUpperCase()}
+                  </div>
+                  <span className="max-w-[120px] sm:max-w-[180px] truncate hidden sm:inline-block">
+                    {user.displayName || userProfile?.name || user.email}
+                  </span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
+                    {role}
+                  </span>
+                </Link>
+
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer shadow-xs"
+                  className="px-3 py-1.5 bg-rose-600/90 hover:bg-rose-600 text-white text-xs font-semibold rounded-lg transition-colors cursor-pointer shadow-xs"
                 >
                   ออกจากระบบ
                 </button>
